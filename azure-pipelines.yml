@@ -33,18 +33,18 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-- task: DotNetCoreCLIPack@2
+- task: DotNetCoreCLI@2
   inputs:
     command: 'pack'
     packagesToPack: '**/*.csproj'
     versioningScheme: 'off'
 
-- task: DotNetCoreCLIPublish@2
+- task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
     publishWebProjects: true
 
-- task: DotNetCoreCLIPush@2
+- task: DotNetCoreCLI@2
   inputs:
     command: 'push'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
