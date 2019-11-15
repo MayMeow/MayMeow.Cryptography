@@ -49,7 +49,7 @@ steps:
 - script: dotnet pack
 - task: DotNetCoreCLI@2
   inputs:
-    command: 'push'
+    command: push
     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
     nuGetFeedType: 'internal'
     publishVstsFeed: '/b6bedc9c-734e-441e-83b4-33f5e500ae0c'
