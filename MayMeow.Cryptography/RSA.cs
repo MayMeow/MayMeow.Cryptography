@@ -57,6 +57,25 @@ namespace MayMeow.Cryptography
         }
 
         /// <summary>
+        /// Get keys from Certificate
+        /// </summary>
+        /// <param name="rSACryptoServiceProvider"></param>
+        /// <param name="privateKey"></param>
+        /// <returns></returns>
+        public static RSAParameters SetKeyFromCertificate(RSACryptoServiceProvider rSACryptoServiceProvider, bool privateKey = false)
+        {
+            return rSACryptoServiceProvider.ExportParameters(privateKey);
+        }
+
+        public static RSAParameters SetKeyFromXml(string xmlString, bool privateKey = false)
+        {
+            RSACryptoServiceProvider rSA = new RSACryptoServiceProvider(4096);
+            rSA.FromXmlString(xmlString);
+
+            return rSA.ExportParameters(privateKey);
+        }
+
+        /// <summary>
         /// Encrypt given plain text
         /// </summary>
         /// <param name="PlainText"></param>
