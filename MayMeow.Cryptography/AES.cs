@@ -9,11 +9,12 @@ namespace MayMeow.Cryptography
     public class AES
     {
         private SymmetricAlgorithm _Aes;
+        public static int AES_KEY_SIZE = 256;
 
         public AES()
         {
             _Aes = new AesCryptoServiceProvider();
-            _Aes.KeySize = 256;
+            _Aes.KeySize = AES_KEY_SIZE;
             _Aes.GenerateKey();
             _Aes.GenerateIV();
         }
@@ -28,9 +29,18 @@ namespace MayMeow.Cryptography
             return System.Convert.ToBase64String(_Aes.IV);
         }
 
+        /// <summary>
+        /// Return encrypted data IV + Data
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="plainText"></param>
+        /// <param name="Key"></param>
+        /// <param name="IV"></param>
+        /// <returns></returns>
         public static string Encrypt<T>(string plainText, string Key, string IV) where T : SymmetricAlgorithm, new()
         {
             byte[] encrypted;
+            byte[] encryptedData;
 
             using (T cipher = new T())
             {
@@ -52,20 +62,35 @@ namespace MayMeow.Cryptography
                         encrypted = ms.ToArray();
                     }
                 }
+
+                encryptedData = GCM.Concat(cipher.IV, encrypted);
             }
 
-            return Convert.ToBase64String(encrypted); ;
+            
+
+            return Convert.ToBase64String(encryptedData); ;
         }
 
-        public static string Decrypt<T>(string encryptedText, string Key, string IV) where T : SymmetricAlgorithm, new()
+        /// <summary>
+        /// Decrypt data IV + DATA with given key
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="encryptedText"></param>
+        /// <param name="Key"></param>
+        /// <returns></returns>
+        public static string Decrypt<T>(string encryptedText, string Key) where T : SymmetricAlgorithm, new()
         {
+            AesCryptoServiceProvider aesCryptoServiceProvider = new AesCryptoServiceProvider();
+            byte[] IV = new byte[aesCryptoServiceProvider.BlockSize / 8];
+
             string plainTest;
-            byte[] ciperText = Convert.FromBase64String(encryptedText);
+            byte[] ciperData = Convert.FromBase64String(encryptedText);
+            byte[] ciperText = GCM.SubArray(ciperData, IV.Length, ciperData.Length - IV.Length);
 
             using (T cipher = new T())
             {
                 cipher.Key = System.Convert.FromBase64String(Key);
-                cipher.IV = System.Convert.FromBase64String(IV);
+                cipher.IV = GCM.SubArray(ciperData, 0, IV.Length);
                 cipher.Mode = CipherMode.CBC;
 
                 ICryptoTransform decryptor = cipher.CreateDecryptor(cipher.Key, cipher.IV);
@@ -91,9 +116,9 @@ namespace MayMeow.Cryptography
             return Encrypt<AesCryptoServiceProvider>(plainText, Key, IV);
         }
 
-        public static string Decrypt(string encryptedText, string Key, string IV)
+        public static string Decrypt(string encryptedText, string Key)
         {
-            return Decrypt<AesCryptoServiceProvider>(encryptedText, Key, IV);
+            return Decrypt<AesCryptoServiceProvider>(encryptedText, Key);
         }
     }
 }

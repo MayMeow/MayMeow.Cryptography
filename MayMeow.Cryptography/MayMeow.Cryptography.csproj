@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;netstandard21</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;netstandard21;net472</TargetFrameworks>
     <Authors>May Meow</Authors>
     <Description>Library for Encrypt / decrypt data</Description>
-    <Version>1.0.5</Version>
+    <Version>1.0.9</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageIcon>icon.png</PackageIcon>

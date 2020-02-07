@@ -7,6 +7,7 @@ namespace MayMeow.Cryptography
 {
     public class GCM
     {
+    #if NETCOREAPP3_0 || NETSTANDARD2_1
         public byte[] _key;
         public byte[] _nonce;
 
@@ -76,6 +77,7 @@ namespace MayMeow.Cryptography
                 return decryptedData;
             }
         }
+    #endif
 
         /// <summary>
         /// Concatening given array of bytes
@@ -115,5 +117,6 @@ namespace MayMeow.Cryptography
 
             return result;
         }
+
     }
 }

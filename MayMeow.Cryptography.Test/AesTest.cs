@@ -18,7 +18,7 @@ namespace MayMeow.Cryptography.Test
 
             string message = "Hello world";
             string AesEncrypted = AES.Encrypt(message, AesKey, AesIV);
-            string AesDecrypted = AES.Decrypt(AesEncrypted, AesKey, AesIV);
+            string AesDecrypted = AES.Decrypt(AesEncrypted, AesKey);
 
             Assert.AreEqual(message, AesDecrypted);
         }

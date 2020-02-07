@@ -82,13 +82,27 @@ namespace MayMeow.Cryptography
         /// <returns></returns>
         public static string Encrypt(string PlainText, RSAParameters rsaKey)
         {
+            byte[] data = Encoding.Unicode.GetBytes(PlainText);
+
+            var cipher = EncryptBytes(data, rsaKey);
+
+            return Convert.ToBase64String(cipher, Base64FormattingOptions.InsertLineBreaks);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataToEncrypt"></param>
+        /// <param name="rsaKey"></param>
+        /// <returns></returns>
+        public static byte[] EncryptBytes(byte [] dataToEncrypt, RSAParameters rsaKey)
+        {
             RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
             provider.ImportParameters(rsaKey);
 
-            byte[] data = Encoding.Unicode.GetBytes(PlainText);
-            byte[] cipher = provider.Encrypt(data, false);
+            byte[] cipher = provider.Encrypt(dataToEncrypt, false);
 
-            return Convert.ToBase64String(cipher, Base64FormattingOptions.InsertLineBreaks);
+            return cipher;
         }
 
         /// <summary>
@@ -98,13 +112,26 @@ namespace MayMeow.Cryptography
         /// <returns></returns>
         public static string Decrypt(string cipherText, RSAParameters rsaKey)
         {
+            byte[] dataBytes = Convert.FromBase64String(cipherText);
+            byte[] plainText = DecryptBytes(dataBytes, rsaKey);
+
+            return Encoding.Unicode.GetString(plainText);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataToDecrypt"></param>
+        /// <param name="rsaKey"></param>
+        /// <returns></returns>
+        public static byte[] DecryptBytes(byte[] dataToDecrypt, RSAParameters rsaKey)
+        {
             RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
             provider.ImportParameters(rsaKey);
 
-            byte[] dataBytes = Convert.FromBase64String(cipherText);
-            byte[] plainText = provider.Decrypt(dataBytes, false);
+            byte[] decrypted = provider.Decrypt(dataToDecrypt, false);
 
-            return Encoding.Unicode.GetString(plainText);
+            return decrypted;
         }
     }
 }
