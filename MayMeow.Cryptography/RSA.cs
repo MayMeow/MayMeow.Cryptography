@@ -100,7 +100,7 @@ namespace MayMeow.Cryptography
             RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
             provider.ImportParameters(rsaKey);
 
-            byte[] cipher = provider.Encrypt(dataToEncrypt, false);
+            byte[] cipher = provider.Encrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA256);
 
             return cipher;
         }
@@ -129,7 +129,7 @@ namespace MayMeow.Cryptography
             RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
             provider.ImportParameters(rsaKey);
 
-            byte[] decrypted = provider.Decrypt(dataToDecrypt, false);
+            byte[] decrypted = provider.Decrypt(dataToDecrypt, RSAEncryptionPadding.OaepSHA256);
 
             return decrypted;
         }
