@@ -4,6 +4,8 @@
 
 Wrapper arround .NET Cryptography library.
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D5DMOTA)
+
 ## Installation
 
 This library can be installed to your project with NuGet package manager
