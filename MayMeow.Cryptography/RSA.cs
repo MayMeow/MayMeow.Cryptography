@@ -24,6 +24,10 @@ namespace MayMeow.Cryptography
             _privateKey = _provider.ExportParameters(true);
         }
 
+        /// <summary>
+        /// Returns RSA parameters as string
+        /// </summary>
+        /// <returns></returns>
         public string GetPrivateKey()
         {
             StringWriter sw = new StringWriter();
@@ -34,6 +38,10 @@ namespace MayMeow.Cryptography
             return sw.ToString();
         }
 
+        /// <summary>
+        /// Retursn RSA parameters as string
+        /// </summary>
+        /// <returns></returns>
         public string GetPublicKey()
         {
             StringWriter sw = new StringWriter();
@@ -42,6 +50,21 @@ namespace MayMeow.Cryptography
             xs.Serialize(sw, _publicKey);
 
             return sw.ToString();
+        }
+
+        /// <summary>
+        /// Returns RSA Parameters
+        /// </summary>
+        /// <param name="withPrivateKey"></param>
+        /// <returns></returns>
+        public  RSAParameters GetRSAParameters(bool withPrivateKey = false)
+        {
+            if (withPrivateKey)
+            {
+                return _privateKey;
+            }
+
+            return _publicKey;
         }
 
         public static RSAParameters SetKeyFromString(string rsaKey)
@@ -132,6 +155,35 @@ namespace MayMeow.Cryptography
             byte[] decrypted = provider.Decrypt(dataToDecrypt, RSAEncryptionPadding.OaepSHA1);
 
             return decrypted;
+        }
+
+        /// <summary>
+        /// Signing given data
+        /// </summary>
+        /// <param name="dataToSign"></param>
+        /// <param name="rsaKey"></param>
+        /// <returns></returns>
+        public static byte[] HashAndSignBytes(byte[] dataToSign, RSAParameters rsaKey)
+        {
+            RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
+            provider.ImportParameters(rsaKey);
+
+            return provider.SignData(dataToSign, SHA256.Create());
+        }
+
+        /// <summary>
+        /// Verify Signed data
+        /// </summary>
+        /// <param name="dataToVerify"></param>
+        /// <param name="signedData"></param>
+        /// <param name="rsaKey"></param>
+        /// <returns></returns>
+        public static bool VerifySignedHash(byte[] dataToVerify, byte[] signedData, RSAParameters rsaKey)
+        {
+            RSACryptoServiceProvider provider = new RSACryptoServiceProvider();
+            provider.ImportParameters(rsaKey);
+
+            return provider.VerifyData(dataToVerify, SHA256.Create(), signedData);
         }
     }
 }
