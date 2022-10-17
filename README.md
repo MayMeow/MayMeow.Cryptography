@@ -65,6 +65,8 @@ Example above using generated and unprotected key for your encryption.
 ### RSA Encryption (asymmetric one)
 
 - Achieving strong encryption through the use of two large prime numbers [Wikipedia](https://en.wikipedia.org/wiki/RSA_(cryptosystem))
+- Encrypts your data with public key
+- Decrypts your data with private key
 - **Solves** I want anybody to be able to encrypt a message, but I'm the only one who can decrypt it. I don't want to share decryption keys with anybody.
 
 First initialize RSA and create your public and private key
