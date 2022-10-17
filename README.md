@@ -34,6 +34,11 @@ using MayMeow.Cryptography;
 
 ### AES encryption (symmetric one)
 
+- Symmetric-key algorithm
+- Approved and used by NSA
+- Much faster than DES and 3DES for bulk data encryption.
+- Original name is **Rijndael**, named to AES after [Advanced Encryption Standard](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard_process) contest.
+
 Initialize aes and generate new key and IV. AES is an symmetric encryption which using same key to encrypt and decrypt.
 
 ```csharp
@@ -59,6 +64,9 @@ Example above using generated and unprotected key for your encryption.
 
 ### RSA Encryption (asymmetric one)
 
+- Achieving strong encryption through the use of two large prime numbers [Wikipedia](https://en.wikipedia.org/wiki/RSA_(cryptosystem))
+- **Solves** I want anybody to be able to encrypt a message, but I'm the only one who can decrypt it. I don't want to share decryption keys with anybody.
+
 First initialize RSA and create your public and private key
 
 ```csharp
@@ -78,7 +86,7 @@ string plainText = RSA.Decrypt(encryptedText, RSA.SetKeyFromString(privKey));
 
 ### AES GCM encryption with protected key (combination of asymmetric and symmetric one)
 
-This is more advande example where key for encryption is protected with RSA. RSA is asymetric encryption where public key is used for encryption your data and for decryption is used private key which is in most time also protected by password. Private key has only its owner.
+This is more advande example where key for encryption is protected with RSA. RSA is asymetric encryption where public key is used for encryption your data and for decryption is used private key, which is in most time also protected by password. :warning: Do not share your private key with anyone!
 
 #### Initialize RSA keys
 
@@ -128,6 +136,45 @@ byte[] encryptedStringData = GCM.Encrypt(Encoding.UTF8.GetBytes(stringToEncrypt)
 ```
 
 For decryption is it same as above.
+
+## Sign and verify data using RSA (a.k.a. Digital signature)
+
+- Sign data using private key
+- Verify data using public key
+- Usually used in cases where it is important to detect forgery or tampering
+- Provides cryptographic way of Authentication, Integrity, Non-repudiation
+
+For more information check this [Wikipedia](https://en.wikipedia.org/wiki/Digital_signature) page.
+
+### Initialize RSA parameters (a.k.a. get your keys)
+
+First you will need to get your public and private key. You can do this as in  [RSA encryption](#rsa-encryption-asymmetric-one). Or you can use random generated one as follows:
+
+```csharp
+RSA rsa = new RSA(RSA.KEY_SIZE);
+RSAParameters key = rsa.GetRSAParameters(true);
+```
+
+method above will be available from version `1.3.0` for all RSA related tasks.
+
+Now you can Sign your data like follows. (You are signing your data with your private key)
+
+```csharp
+byte[] signedData = RSA.HashAndSignBytes(dataToSign, key);
+
+// if you using method with keys provided from string use
+byte[] signedData = RSA.HashAndSignBytes(dataToSign, RSA.SetKeyFromString(privKey));
+```
+
+And for verification use following lines (You are verifying your data with your Public key)
+
+```csharp
+// will be TRUE if your data wasn't modified from time of your signature, otherwise it will be FALSE
+bool isVerified = RSA.VerifySignedHash(dataToSign, key);
+
+// if you using method with keys provided from string use
+bool isVerified = RSA.VerifySignedHash(dataToSign, RSA.SetKeyFromString(pubKey));
+```
 
 ## Key derivation with PBKDF2
 
