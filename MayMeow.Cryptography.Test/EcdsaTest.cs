@@ -25,5 +25,17 @@ namespace MayMeow.Cryptography.Test
 
             Assert.IsTrue(isVerified);
         }
+
+        [TestMethod]
+        public void TestKDF()
+        {
+            ECDSA eCDSA = new ECDSA();
+            ECParameters ecParameters = eCDSA.getKeys();
+
+            string keyOne = ECDSA.DeriveKey(ecParameters);
+            string keyTwo = ECDSA.DeriveKey(ecParameters);
+
+            Assert.AreEqual(keyOne, keyTwo);
+        }
     }
 }

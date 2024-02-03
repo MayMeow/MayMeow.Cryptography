@@ -22,6 +22,5 @@ namespace MayMeow.Cryptography.Test
 
             Assert.AreEqual(message, AesDecrypted);
         }
-
     }
 }

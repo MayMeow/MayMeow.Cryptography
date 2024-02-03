@@ -96,6 +96,25 @@ namespace MayMeow.Cryptography
             return isVerified;
         }
 
+        /// <summary>
+        /// Derive key for symetric encryption
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static string DeriveKey(ECParameters parameters, string context = "default_context")
+        {
+            byte[] privateKeyBytes = parameters.D;
+
+            using (HMACSHA256 hmac =  new HMACSHA256(privateKeyBytes))
+            {
+                byte[] contextBytes = Encoding.UTF8.GetBytes(context);
+                byte[] hash = hmac.ComputeHash(contextBytes);
+
+                return Convert.ToBase64String(hash);
+            }
+        }
+
     }
 
 }
