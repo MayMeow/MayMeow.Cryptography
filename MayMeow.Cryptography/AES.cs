@@ -6,6 +6,12 @@ using System.Text;
 
 namespace MayMeow.Cryptography
 {
+
+    /// <summary>
+    /// AES encryption and decryption class using AesCryptoServiceProvider.
+    /// </summary>
+    /// 
+    [Obsolete("This class is deprecated, see MayMeow.Cryptography.Security.SymmetricEncryptionManager Instead")]
     public class AES
     {
         private SymmetricAlgorithm _Aes;
