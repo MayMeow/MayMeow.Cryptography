@@ -11,7 +11,7 @@ namespace MayMeow.Cryptography
     /// AES encryption and decryption class using AesCryptoServiceProvider.
     /// </summary>
     /// 
-    [Obsolete("This class is deprecated, se MayMeow.Cryptography.Security.SymmetricEncryptionManager Instead")]
+    [Obsolete("This class is deprecated, see MayMeow.Cryptography.Security.SymmetricEncryptionManager Instead")]
     public class AES
     {
         private SymmetricAlgorithm _Aes;
