@@ -22,6 +22,48 @@ namespace MayMeow.Cryptography.Security
             public int Iterations { get; set; }
         }
 
+        public static class EncryptedDataExtensions
+        {
+            public static string ToBase64(EncryptedData encryptedData)
+            {
+                if (encryptedData == null)
+                {
+                    throw new ArgumentNullException(nameof(encryptedData), "Encrypted data cannot be null");
+                }
+
+                var combinedData = new List<byte>();
+                combinedData.AddRange(encryptedData.Salt);
+                combinedData.AddRange(encryptedData.IV);
+                combinedData.AddRange(BitConverter.GetBytes(encryptedData.Iterations));
+                combinedData.AddRange(encryptedData.CipherData);
+
+                return Convert.ToBase64String(combinedData.ToArray());
+            }
+
+            public static EncryptedData FromBase64(string base64String)
+            {
+                if (string.IsNullOrEmpty(base64String))
+                {
+                    throw new ArgumentException("Base64 string cannot be null or empty", nameof(base64String));
+                }
+
+                var combinedData = Convert.FromBase64String(base64String);
+
+                var salt = combinedData.Take(16).ToArray();
+                var iv = combinedData.Skip(16).Take(16).ToArray();
+                var iterations = BitConverter.ToInt32(combinedData.Skip(32).Take(4).ToArray(), 0);
+                var cipherData = combinedData.Skip(36).ToArray();
+
+                return new EncryptedData
+                {
+                    Salt = salt,
+                    IV = iv,
+                    Iterations = iterations,
+                    CipherData = cipherData
+                };
+            }
+        }
+
         public static EncryptedData encryptData(string password, string DataToEncrypt)
         {
             if (string.IsNullOrEmpty(password))
