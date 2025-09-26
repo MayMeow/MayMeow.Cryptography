@@ -8,22 +8,52 @@ using System.Threading.Tasks;
 
 namespace MayMeow.Cryptography.Security
 {
+    /// <summary>
+    /// Provides symmetric encryption and decryption using AES-256 with PBKDF2 key derivation.
+    /// </summary>
     public static class SymmetricEncryptionManager
     {
         private const int keySize = 32;
         private const int IVSize = 16;
         private const int DefaultIterations = 100000;
 
+        /// <summary>
+        /// Contains encrypted data and cryptographic parameters needed for decryption.
+        /// </summary>
         public class EncryptedData
         {
+            /// <summary>
+            /// Gets or sets the encrypted data bytes.
+            /// </summary>
             public byte[] CipherData { get; set; }
+            
+            /// <summary>
+            /// Gets or sets the salt used for key derivation.
+            /// </summary>
             public byte[] Salt { get; set; }
+            
+            /// <summary>
+            /// Gets or sets the initialization vector used for encryption.
+            /// </summary>
             public byte[] IV { get; set; }
+            
+            /// <summary>
+            /// Gets or sets the number of PBKDF2 iterations used for key derivation.
+            /// </summary>
             public int Iterations { get; set; }
         }
 
+        /// <summary>
+        /// Provides conversion methods for EncryptedData objects.
+        /// </summary>
         public static class EncryptedDataExtensions
         {
+            /// <summary>
+            /// Converts EncryptedData to a Base64 string for storage or transmission.
+            /// </summary>
+            /// <param name="encryptedData">The encrypted data to convert.</param>
+            /// <returns>A Base64 string representation of the encrypted data.</returns>
+            /// <exception cref="ArgumentNullException">Thrown when encryptedData is null.</exception>
             public static string ToBase64(EncryptedData encryptedData)
             {
                 if (encryptedData == null)
@@ -40,6 +70,13 @@ namespace MayMeow.Cryptography.Security
                 return Convert.ToBase64String(combinedData.ToArray());
             }
 
+            /// <summary>
+            /// Converts a Base64 string back to EncryptedData object.
+            /// </summary>
+            /// <param name="base64String">The Base64 string to convert.</param>
+            /// <returns>An EncryptedData object containing the cryptographic parameters.</returns>
+            /// <exception cref="ArgumentException">Thrown when base64String is null or empty.</exception>
+            /// <exception cref="FormatException">Thrown when base64String is not a valid Base64 string.</exception>
             public static EncryptedData FromBase64(string base64String)
             {
                 if (string.IsNullOrEmpty(base64String))
@@ -64,6 +101,13 @@ namespace MayMeow.Cryptography.Security
             }
         }
 
+        /// <summary>
+        /// Encrypts data using AES-256 encryption with PBKDF2 key derivation.
+        /// </summary>
+        /// <param name="password">The password to use for encryption.</param>
+        /// <param name="DataToEncrypt">The data to encrypt.</param>
+        /// <returns>An EncryptedData object containing the encrypted data and cryptographic parameters.</returns>
+        /// <exception cref="ArgumentException">Thrown when password is null or empty.</exception>
         public static EncryptedData encryptData(string password, string DataToEncrypt)
         {
             if (string.IsNullOrEmpty(password))
@@ -103,6 +147,15 @@ namespace MayMeow.Cryptography.Security
             }
         }
 
+        /// <summary>
+        /// Decrypts data using the provided password and encrypted data parameters.
+        /// </summary>
+        /// <param name="encryptedData">The encrypted data to decrypt.</param>
+        /// <param name="password">The password used for decryption.</param>
+        /// <returns>The decrypted data as a string.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when encryptedData is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when password is null or empty.</exception>
+        /// <exception cref="CryptographicException">Thrown when decryption fails.</exception>
         public static string decryptData(EncryptedData encryptedData, string password)
         {
             if (encryptedData == null)
@@ -131,6 +184,10 @@ namespace MayMeow.Cryptography.Security
             }
         }
 
+        /// <summary>
+        /// Generates a cryptographically secure random password.
+        /// </summary>
+        /// <returns>A Base64-encoded random password with 256 bits of entropy.</returns>
         public static string GenerateRandomPassword()
         {
             var passwordBytes = new byte[keySize];

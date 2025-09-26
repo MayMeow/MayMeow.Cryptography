@@ -190,4 +190,156 @@ to derive key use following snippet
 var derivedKey = PBKDF2.keyDerivate(password, salt, 1024, 10);
 ```
 
+## Symmetric Encryption Manager
+
+The `SymmetricEncryptionManager` provides a high-level, secure implementation of AES-256 symmetric encryption with password-based key derivation. This class is designed for developers who need strong encryption without dealing with low-level cryptographic details.
+
+### Security Features
+
+- **AES-256 encryption** with CBC mode and PKCS7 padding
+- **PBKDF2-SHA256 key derivation** with 100,000 iterations for password-to-key conversion
+- **Unique salt and IV generation** for each encryption operation
+- **Secure random password generation** capability
+- **Integrated data structure** that includes all parameters needed for decryption
+
+### Basic Usage
+
+#### Encrypting and Decrypting Data
+
+```csharp
+using MayMeow.Cryptography.Security;
+
+// Generate a secure password
+string password = SymmetricEncryptionManager.GenerateRandomPassword();
+string dataToEncrypt = "Sensitive information to protect";
+
+// Encrypt the data
+var encryptedData = SymmetricEncryptionManager.encryptData(password, dataToEncrypt);
+
+// Convert to Base64 for storage or transmission
+string base64Encrypted = SymmetricEncryptionManager.EncryptedDataExtensions.ToBase64(encryptedData);
+
+// Later, retrieve and decrypt the data
+var retrievedData = SymmetricEncryptionManager.EncryptedDataExtensions.FromBase64(base64Encrypted);
+string decryptedText = SymmetricEncryptionManager.decryptData(retrievedData, password);
+
+Console.WriteLine($"Original: {dataToEncrypt}");
+Console.WriteLine($"Decrypted: {decryptedText}");
+// Both strings will be identical
+```
+
+#### Using Your Own Password
+
+```csharp
+string myPassword = "MyStrongPassword123!";
+string message = "Secret message";
+
+// Encrypt with your password
+var encrypted = SymmetricEncryptionManager.encryptData(myPassword, message);
+
+// Decrypt with the same password
+string decrypted = SymmetricEncryptionManager.decryptData(encrypted, myPassword);
+```
+
+#### Error Handling
+
+```csharp
+try
+{
+    var encryptedData = /* ... load from storage ... */;
+    string password = /* ... get from user ... */;
+    
+    string decryptedText = SymmetricEncryptionManager.decryptData(encryptedData, password);
+    Console.WriteLine($"Successfully decrypted: {decryptedText}");
+}
+catch (CryptographicException)
+{
+    Console.WriteLine("Decryption failed - incorrect password or corrupted data");
+}
+catch (ArgumentException ex)
+{
+    Console.WriteLine($"Invalid input: {ex.Message}");
+}
+```
+
+### Advanced Usage
+
+#### Working with Base64 Serialization
+
+The `EncryptedDataExtensions` class provides convenient methods for converting encrypted data to and from Base64 strings for storage or transmission:
+
+```csharp
+// Encrypt data
+var encryptedData = SymmetricEncryptionManager.encryptData(password, "data");
+
+// Convert to Base64 for database storage
+string base64String = SymmetricEncryptionManager.EncryptedDataExtensions.ToBase64(encryptedData);
+
+// Store in database, file, or send over network
+SaveToDatabase(base64String);
+
+// Later, retrieve and convert back
+string retrievedBase64 = LoadFromDatabase();
+var retrievedData = SymmetricEncryptionManager.EncryptedDataExtensions.FromBase64(retrievedBase64);
+
+// Decrypt
+string decryptedData = SymmetricEncryptionManager.decryptData(retrievedData, password);
+```
+
+#### Accessing Cryptographic Parameters
+
+The `EncryptedData` class contains all the cryptographic parameters used during encryption:
+
+```csharp
+var encryptedData = SymmetricEncryptionManager.encryptData(password, "data");
+
+Console.WriteLine($"Salt length: {encryptedData.Salt.Length} bytes");
+Console.WriteLine($"IV length: {encryptedData.IV.Length} bytes");
+Console.WriteLine($"Iterations: {encryptedData.Iterations}");
+Console.WriteLine($"Cipher data length: {encryptedData.CipherData.Length} bytes");
+```
+
+### Security Best Practices
+
+#### Password Guidelines
+
+- **Use strong passwords**: Minimum 12 characters with mixed case, numbers, and symbols
+- **Use unique passwords**: Don't reuse encryption passwords across different contexts
+- **Consider generated passwords**: Use `GenerateRandomPassword()` for maximum security
+- **Secure password storage**: Store passwords using secure password management practices
+
+#### Data Protection
+
+- **Protect encrypted data**: Store encrypted data securely to prevent tampering
+- **Verify integrity**: Consider additional integrity checks for critical data
+- **Secure transmission**: Use secure channels (HTTPS/TLS) when transmitting encrypted data
+- **Key rotation**: Periodically re-encrypt data with new passwords for long-term storage
+
+#### Implementation Notes
+
+- **Salt and IV uniqueness**: Each encryption operation generates a unique salt and IV automatically
+- **No password reuse detection**: The system doesn't prevent password reuse - this is application responsibility
+- **Memory security**: Consider secure memory handling for sensitive passwords in production applications
+- **Performance**: PBKDF2 with 100,000 iterations may take ~100ms per operation - consider this for high-frequency scenarios
+
+### Technical Details
+
+- **Algorithm**: AES-256 in CBC mode with PKCS7 padding
+- **Key Derivation**: PBKDF2-SHA256 with 100,000 iterations
+- **Salt Size**: 16 bytes (128 bits)
+- **IV Size**: 16 bytes (128 bits)
+- **Key Size**: 32 bytes (256 bits)
+- **Generated Password Entropy**: 256 bits (32 random bytes, Base64 encoded)
+
+### Exception Handling
+
+The SymmetricEncryptionManager methods can throw the following exceptions:
+
+- `ArgumentException`: When passwords are null or empty
+- `ArgumentNullException`: When encrypted data objects are null
+- `CryptographicException`: When decryption fails due to wrong password or corrupted data
+- `FormatException`: When Base64 strings are invalid during conversion
+
+Always wrap encryption/decryption operations in appropriate try-catch blocks to handle these exceptions gracefully.
+
 License MIT
